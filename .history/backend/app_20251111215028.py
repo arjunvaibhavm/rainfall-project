@@ -12,7 +12,7 @@ import requests
 # WARNING: Do not share this file publicly if your key is in it.
 WEATHER_API_KEY = "b26abbbb1641a44c12cfa7c7a78c3fd1"
 
-if WEATHER_API_KEY == "b26abbbb1641a44c12cfa7c7a78c3fd1" and not os.environ.get('DATABASE_URL'):
+if WEATHER_API_KEY == "b26abbbb1641a44c12cfa7c7a78c3fd1YOUR_API_KEY_Gb26abbbb1641a44c12cfa7c7a78c3fd1OES_HERE" and not os.environ.get('DATABASE_URL'):
     print("="*50)
     print("WARNING: Please replace 'YOUR_API_KEY_GOES_HERE' in app.py")
     print("         with your actual OpenWeatherMap API key.")

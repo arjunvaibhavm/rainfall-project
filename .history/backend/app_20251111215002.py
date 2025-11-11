@@ -10,9 +10,9 @@ import requests
 # --- Configuration ---
 # PASTE YOUR API KEY HERE.
 # WARNING: Do not share this file publicly if your key is in it.
-WEATHER_API_KEY = "b26abbbb1641a44c12cfa7c7a78c3fd1"
+WEATHER_API_KEY = "YOUR_API_KEY_GOES_HERE"
 
-if WEATHER_API_KEY == "b26abbbb1641a44c12cfa7c7a78c3fd1" and not os.environ.get('DATABASE_URL'):
+if WEATHER_API_KEY == "YOUR_API_KEY_GOES_HERE" and not os.environ.get('DATABASE_URL'):
     print("="*50)
     print("WARNING: Please replace 'YOUR_API_KEY_GOES_HERE' in app.py")
     print("         with your actual OpenWeatherMap API key.")
@@ -210,3 +210,6 @@ if __name__ == '__main__':
     
     # Run the app
     app.run(host='0.0.0.0', port=5000, debug=True)
+```eof
+
+Please let me know once you can see this code, and I'll send the next file (`frontend/app.jsx`).
