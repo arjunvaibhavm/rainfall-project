@@ -1,0 +1,30 @@
+/* body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* --- NEW BACKGROUND STYLES --- */
+  
+  /* 1. Import your new background image */
+  background-image: url('./WhatsApp Image 2025-11-13 at 18.45.39_c1f3edcd.jpg');
+  
+  /* 2. Make it fill the entire screen */
+  background-size: cover;
+  
+  /* 3. Center it */
+  background-position: center center;
+  
+  /* 4. Keep it in place when you scroll */
+  background-attachment: fixed;
+  
+  /* 5. A fallback color in case the image fails to load */
+  background-color: #1a202c; 
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+} */

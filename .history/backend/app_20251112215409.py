@@ -8,9 +8,9 @@ from flask_cors import CORS
 import requests
 
 # --- Configuration ---
-WEATHER_API_KEY = "b26abbbb1641a44c12cfa7c7a78c3fd1" 
+WEATHER_API_KEY = "YOUR_API_KEY_GOES_HERE" 
 
-if WEATHER_API_KEY == "b26abbbb1641a44c12cfa7c7a78c3fd1" and not os.environ.get('DATABASE_URL'):
+if WEATHER_API_KEY == "YOUR_API_KEY_GOES_HERE" and not os.environ.get('DATABASE_URL'):
     print("="*50)
     print("WARNING: Please replace 'YOUR_API_KEY_GOES_HERE' in app.py")
     print("="*50)

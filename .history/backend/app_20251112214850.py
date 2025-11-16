@@ -8,16 +8,14 @@ from flask_cors import CORS
 import requests
 
 # --- Configuration ---
-WEATHER_API_KEY = "b26abbbb1641a44c12cfa7c7a78c3fd1" 
+WEATHER_API_KEY = "YOUR_API_KEY_GOES_HERE" 
 
-if WEATHER_API_KEY == "b26abbbb1641a44c12cfa7c7a78c3fd1" and not os.environ.get('DATABASE_URL'):
+if WEATHER_API_KEY == "YOUR_API_KEY_GOES_HERE" and not os.environ.get('DATABASE_URL'):
     print("="*50)
     print("WARNING: Please replace 'YOUR_API_KEY_GOES_HERE' in app.py")
     print("="*50)
 
-WEATHER_API_URL = "https://api.openweathermap.org/data/2.5/forecast"
-# --- NEW: URL to find cities by coordinates ---
-NEARBY_API_URL = "https://api.openweathermap.org/data/2.5/find"
+WEATHER_API_URL = "[https://api.openweathermap.org/data/2.5/forecast](https://api.openweathermap.org/data/2.5/forecast)"
 
 # --- App & Database Setup ---
 app = Flask(__name__)
@@ -171,66 +169,22 @@ def predict():
 
     anchor_city = data['city']
     activity = data.get('activity', 'none')
-    # --- REMOVED: No longer need to get compare_locations from user ---
-    # compare_locations_str = data.get('compare_locations', '')
+    compare_locations_str = data.get('compare_locations', '')
     
+    # Create list of cities to compare
+    compare_cities = [city.strip() for city in compare_locations_str.split(',') if city.strip()]
+    # Add anchor city to the list, and remove duplicates
+    all_cities_to_check = [anchor_city] + [city for city in compare_cities if city.lower() != anchor_city.lower()]
+
     if not WEATHER_API_KEY or WEATHER_API_KEY == "YOUR_API_KEY_GOES_HERE":
         return jsonify({"error": "Server configuration error: Weather API key is missing."}), 500
 
-    # --- Step 1: Get weather for the Anchor City FIRST ---
-    anchor_city_weather_data = get_weather_for_city(anchor_city)
-    
-    if not anchor_city_weather_data or 'list' not in anchor_city_weather_data or not anchor_city_weather_data['list']:
-         return jsonify({"error": f"Could not retrieve weather data for anchor city: {anchor_city}"}), 404
-
-    # --- Step 2: Auto-detect nearby cities ---
-    all_cities_to_check = [anchor_city] # Start the list with our anchor
-    try:
-        coord = anchor_city_weather_data.get('city', {}).get('coord', {})
-        lat = coord.get('lat')
-        lon = coord.get('lon')
-
-        if lat and lon:
-            print(f"Found coords for {anchor_city}: {lat}, {lon}. Finding nearby cities...")
-            nearby_params = {
-                'lat': lat,
-                'lon': lon,
-                'cnt': 6, # Get anchor city + 5 nearby
-                'appid': WEATHER_API_KEY,
-                'units': 'metric'
-            }
-            nearby_response = requests.get(NEARBY_API_URL, params=nearby_params)
-            if nearby_response.status_code == 200:
-                nearby_data = nearby_response.json()
-                if 'list' in nearby_data:
-                    for item in nearby_data['list']:
-                        city_name = item['name']
-                        # Add if not anchor city and not already in list
-                        if city_name.lower() != anchor_city.lower() and city_name not in all_cities_to_check:
-                            all_cities_to_check.append(city_name)
-                    print(f"Cities to scout: {all_cities_to_check}")
-            else:
-                print(f"Error finding nearby cities: {nearby_response.text}")
-        else:
-            print("Could not find coords in anchor city data.")
-    except Exception as e:
-        print(f"Error during nearby city search: {e}")
-        # Non-fatal, we can continue with just the anchor city
-
-
     # --- Location Scouting Logic ---
     location_ranking = []
-    # --- MODIFIED: Use the anchor city data we already fetched ---
-    anchor_city_weather_data_for_loop = anchor_city_weather_data 
+    anchor_city_weather_data = None
     
     for city in all_cities_to_check:
-        weather_data = None
-        if city.lower() == anchor_city.lower():
-            # Use the data we fetched in Step 1
-            weather_data = anchor_city_weather_data_for_loop
-        else:
-            # Fetch data for the *other* nearby cities
-            weather_data = get_weather_for_city(city)
+        weather_data = get_weather_for_city(city)
         
         if not weather_data or 'list' not in weather_data or not weather_data['list']:
             location_ranking.append({
@@ -242,7 +196,6 @@ def predict():
             continue
 
         # Save the anchor city's data for our main display
-        # Note: we must set this for the loop, but it's okay to overwrite
         if city.lower() == anchor_city.lower():
             anchor_city_weather_data = weather_data
 
@@ -261,9 +214,9 @@ def predict():
     location_ranking.sort(key=lambda x: x['score'], reverse=True)
 
     # --- Now, process the ANCHOR CITY data for display and DB saving ---
-    # --- We already have this data from Step 1, no need to check for errors ---
-    # if not anchor_city_weather_data:
-    #    ...
+    if not anchor_city_weather_data:
+        # This handles if the anchor city itself had no data
+        return jsonify({"error": f"Could not retrieve weather data for anchor city: {anchor_city}"}), 404
 
     # Get data from the *first* (and only) forecast block
     first_forecast = anchor_city_weather_data['list'][0]
